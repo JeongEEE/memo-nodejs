@@ -77,7 +77,7 @@ exports.userLogout = function (req, res) {
     { token: "" }, 
     (err, user) => {
       if(err) return res.json({ code: 1, success: false, message: '서버오류', error: err });
-      else return res.status(200).send({
+      else return res.status(200).json({
         code: 0,
         success: true,
         message: '요청성공',

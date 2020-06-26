@@ -9,9 +9,10 @@
 * npm install jsonwebtoken --save
 */
 
+//const http = require('http');
 const express = require('express');
 const app = express();
-const port = process.env.PORT || 5000;
+const port = 7771;
 const router = require('./route/router');
 const bodyParser = require('body-parser');
 //const cookieParser = require('cookie-parser');
@@ -31,7 +32,7 @@ mongoose.connect(config.mongoURI, {
 }).then(() => console.log('MongoDB Connected! - Server Ready'))
   .catch(err => console.log(err))
 
-app.use(router)
+app.use(router);
 
 app.listen(port, err => {
   if(err) console.log(err);
