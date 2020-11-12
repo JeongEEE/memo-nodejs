@@ -1,14 +1,15 @@
-const Board = require("../models/board");
-const Comment = require("../models/comment");
+const Board = require('../models/board');
+const Comment = require('../models/comment');
+const bodyParser = require('body-parser');
 
 exports.boardGet = function (req, res) {
   // 전체 목록 요청
   let pageSize = Number(req.query.pageSize);
 
-  Board.find({}, null, {limit: pageSize}).then((data) => {
+  Board.find({ "systemUserId": req.params.systemUserId }, null, {limit: pageSize})
+  .then((data) => {
     return res.status(200).json({
       code: 0,
-      success: true,
       message: "요청성공",
       data: data,
     });
@@ -16,7 +17,6 @@ exports.boardGet = function (req, res) {
   .catch((err) => {
     return res.status(500).json({
       code: 1,
-      success: false,
       message: "서버오류",
       error: err,
     });
@@ -32,13 +32,11 @@ exports.boardReadDocumentFormId = function (req, res) {
     if (!data) {
       return res.status(404).json({
         code: 1,
-        success: false,
         message: "해당하는 게시글을 찾을 수 없습니다.",
       });
     } else {
       return res.status(200).json({
         code: 0,
-        success: true,
         message: "요청성공",
         data: data,
       });
@@ -47,7 +45,6 @@ exports.boardReadDocumentFormId = function (req, res) {
   .catch((err) => {
     return res.status(500).json({
       code: 1,
-      success: false,
       message: "서버오류",
       error: err
     });
@@ -63,11 +60,11 @@ exports.boardWrite = function (req, res) {
 
   board.save(board).then((data) => {
     return res.status(200)
-      .json({ code: 0, success: true, message: "요청성공", data: data });
+      .json({ code: 0, message: "요청성공", data: data });
   })
   .catch((err) => {
     return res.status(500)
-      .json({ code: 1, success: false, message: "서버오류", error: err });
+      .json({ code: 1, message: "서버오류", error: err });
   });
 };
 
@@ -77,28 +74,35 @@ exports.boardModify = function (req, res) {
     if (!data) {
       return res.status(404).json({
         code: 1,
-        success: false,
         message: "해당하는 게시글을 찾을 수 없습니다.",
       });
     } else {
       return res.status(200)
-        .json({ code: 0, success: true, message: "요청성공", data: data });
+        .json({ code: 0, message: "요청성공", data: data });
     }
   })
   .catch((err) => {
     return res.status(500)
-      .json({ code: 1, success: false, message: "서버오류", error: err });
+      .json({ code: 1, message: "서버오류", error: err });
   });
 };
 
 exports.boardDelete = function (req, res) {
   // 게시글 삭제
   Board.findByIdAndRemove(req.params.id).then((data) => {
-    return res.status(200).json({ code: 0, success: true, message: "요청성공" });
+    if (!data) {
+      return res.status(404).json({
+        code: 1,
+        message: "해당하는 게시글을 찾을 수 없습니다.",
+      });
+    } else {
+      return res.status(200)
+        .json({ code: 0, message: "요청성공" });
+    }
   })
   .catch((err) => {
     return res.status(500)
-      .json({ code: 1, success: false, message: "서버오류", error: err });
+      .json({ code: 1, message: "서버오류", error: err });
   });
 };
 
@@ -116,14 +120,13 @@ exports.boardCommentWrite = function (req, res) {
       if (err) {
         return res.json({
           code: 1,
-          success: false,
           message: "서버오류",
           error: err,
         });
       } else
         return res
           .status(200)
-          .json({ code: 0, success: true, message: "요청성공", data: board });
+          .json({ code: 0, message: "요청성공", data: board });
     }
   );
 };
